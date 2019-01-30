@@ -1,9 +1,11 @@
-import fs from 'fs';
-import path from 'path';
-import parse from 'csv-parse';
-import transform from 'stream-transform';
+import fs from "fs";
+import path from "path";
 
-import transformRecord from '../lib/transform';
+// Specific to the given parser.
+import parse from "csv-parse";
+import transform from "stream-transform";
+
+import transformRecord from "../lib/transform";
 
 export const handler = () => {
   const { FILE: file } = process.env;
@@ -32,19 +34,19 @@ export const handler = () => {
 
   readStream
     .pipe(parser)
-    .on('error', error => {
-      console.error('Parsing error.', error);
+    .on("error", error => {
+      console.error("Parsing error.", error);
     })
     .pipe(transformer)
-    .on('error', error => {
-      console.error('Transform error.', error);
+    .on("error", error => {
+      console.error("Transform error.", error);
     })
     .pipe(writeStream)
-    .on('error', error => {
-      console.error('Writing error.', error);
+    .on("error", error => {
+      console.error("Writing error.", error);
     })
-    .on('end', () => {
-      console.log('CSV parsed successfully');
+    .on("end", () => {
+      console.log("CSV parsed successfully");
     });
 };
 
