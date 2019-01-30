@@ -11,7 +11,6 @@ export const handler = () => {
 
   const readStream = fs.createReadStream(path.resolve(`../../${file}.xlsm`));
 
-  // Put data in buffer
   const buffers = [];
 
   readStream.on("data", data => {
@@ -22,25 +21,16 @@ export const handler = () => {
     return console.error(error);
   });
 
-  // Manage data
-  readStream.on("end", async () => {
-    let dataString = "";
-
-    // Parse file
+  readStream.on("end", () => {
     const buffer = Buffer.concat(buffers);
     const workbook = XLSX.read(buffer);
+    const sheets = workbook.SheetNames;
 
-    workbook.SheetNames.forEach(sheet => {
-      const parsedRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
+    return sheets.map(sheet => {
+      const ws = workbook.Sheets[sheet];
+      const data = JSON.stringify(XLSX.utils.sheet_to_json(ws));
 
-      debugger;
-
-      for (let i = 0; i < parsedRows.length; i += 1) {
-        const data = transformRecord(parsedRows[i]);
-        dataString += `${JSON.stringify(data)}\n`;
-      }
-
-      fs.writeFileSync(`${file}.ndjson`, dataString);
+      return fs.writeFileSync(path.resolve(`./${sheet}.json`), data);
     });
   });
 };
