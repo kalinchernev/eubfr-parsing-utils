@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "parsing-utils-csv",
+  "name": "parsing-utils-xls",
   "version": "0.0.1",
   "dependencies": {
     "xlsx": "0.14.1"
