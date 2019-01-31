@@ -22,16 +22,44 @@ export const handler = () => {
   });
 
   readStream.on("end", () => {
+    const useful = ["Core Indicators", "Agregated Indicaters"];
+    const projects = [];
     const buffer = Buffer.concat(buffers);
     const workbook = XLSX.read(buffer);
     const sheets = workbook.SheetNames;
 
-    return sheets.map(sheet => {
+    sheets.map(sheet => {
+      const records = [];
       const ws = workbook.Sheets[sheet];
-      const data = JSON.stringify(XLSX.utils.sheet_to_json(ws));
+      const rows = XLSX.utils.sheet_to_json(ws);
 
-      return fs.writeFileSync(path.resolve(`./${sheet}.json`), data);
+      if (useful.includes(sheet) && rows.length) {
+        const header = rows.shift();
+
+        rows.forEach(row => {
+          const record = {};
+
+          Object.keys(row).map(field => {
+            const improvedField = header[field].replace(/(\r\n|\n|\r)/gm, " ");
+            record[improvedField] = row[field];
+          });
+
+          records.push(record);
+        });
+
+        projects.push(records);
+      }
     });
+
+    const p1 = projects.pop();
+    const p2 = projects.pop();
+
+    p1.forEach((p1project, key) => {
+      const projectMerged = Object.assign({}, p1project, p2[key]);
+      projects.push(projectMerged);
+    });
+
+    debugger;
   });
 };
 
