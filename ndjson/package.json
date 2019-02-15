@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "name": "parsing-utils-ndjson",
+  "version": "0.0.1",
+  "dependencies": {
+    "split2": "3.1.0",
+    "through2": "3.0.0"
+  }
+}
